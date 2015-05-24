@@ -77,25 +77,25 @@ public interface ZhixueApi {
     void getCouponList(Callback&lt;Coupon&gt; reponse);
 
     //2. 一个或几个参数的post请求
-    //  注:     如果使用官方指南中提到的@Query和@QueryMap对参数进行封装, 那么默认会将参数拼到URL之中
-    //        首先并不建议将参数拼如URL, 其次由于编码原因, 如果选择采用@Query或者@QueryMap类型的注解, 则参数中必然不能有中文
-    //        其次如果使用@Query或者@QueryMap, 也就不能使用@FormUrlEncoded注解, 否则参数会消失
-    //        如果使用了@FormUrlEncoded注解, 则必须使用@Field或者@FieldMap注解来作为参数
+    // 注: 如果使用官方指南中提到的@Query和@QueryMap对参数进行封装, 那么默认会将参数拼到URL之中
+    // 首先并不建议将参数拼如URL, 其次由于编码原因, 如果选择采用@Query或者@QueryMap类型的注解, 则参数中必然不能有中文
+    // 其次如果使用@Query或者@QueryMap, 也就不能使用@FormUrlEncoded注解, 否则参数会消失
+    // 如果使用了@FormUrlEncoded注解, 则必须使用@Field或者@FieldMap注解来作为参数
     @FormUrlEncoded
        @POST("/interface/xxxxxx")
        void getCourseList(@Field("userId") String userId, @Field("orderId") String orderId, Callback&lt;Coupon&gt; response);
 
     //3. 通过@FieldMap注解来封装参数
-    //  注:     如果你的参数只有一个或者两三个, 那么用@Field就基本足够了, 但如果你的参数非常之多, 七八个甚至十几个
-    //        那么我们就可以用一个Map去封装, 通过key-value的形式封装好Map对象后再传入, 代码会相对整洁, 在做参数传递的时候也不至于乱套
+    //注: 如果你的参数只有一个或者两三个, 那么用@Field就基本足够了, 但如果你的参数非常之多, 七八个甚至十几个
+    //那么我们就可以用一个Map去封装, 通过key-value的形式封装好Map对象后再传入, 代码会相对整洁, 在做参数传递的时候也不至于乱套
     @FormUrlEncoded
     @POST("/interface/xxxxxx")
        void getCourseList(@FieldMap Map&lt;String,String&gt; paramsMap, Callback&lt;Coupon&gt; response);
 
     //4. 提交multipart请求
-    //  注:     如果我们要提交用户拍的的照片, 或者是录好的语音, 那么我们就要用到@Multipart这个注解了
-    //        在使用Multipart的时候, 注意参数的注解必须是@Part或者@PartMap 
-    //        @PartMap和上面的@FieldMap类似, 都是通过Map封装好参数, 就不过多解释了.
+    // 注: 如果我们要提交用户拍的的照片, 或者是录好的语音, 那么我们就要用到@Multipart这个注解了
+    // 在使用Multipart的时候, 注意参数的注解必须是@Part或者@PartMap 
+    // @PartMap和上面的@FieldMap类似, 都是通过Map封装好参数, 就不过多解释了.
     @Multipart
        @POST("/interface/photoUpload_servlet")
        void submitUserPhoto(@Part("userId") String userId, @Part("file") TypedFile file, Callback&lt;Coupon&gt; response response);
@@ -118,13 +118,13 @@ public class ZhixueApiUtil {
 
     private static ZhixueApiUtil mInstance;
     //此前定义的接口的实例
-       private ZhixueApi zhixueApi;
+    private ZhixueApi zhixueApi;
     //我们的主域名
     private static final String HOST = "http://111.111.111.111";
     //构造函数
     private ZhixueApiUtil() {
         //在构造函数中我们要通过实例化RestAdapter拿到我们的ZhixueApi
-        //    注:    setRequestInterceptor()在这里是为了在请求头中加入设备信息, 方便我们后台的调试
+        //注: setRequestInterceptor()在这里是为了在请求头中加入设备信息, 方便我们后台的调试
         RestAdapter restAdapter = new RestAdapter.Builder().setRequestInterceptor(defaultInterceptor).setEndpoint(HOST).build();
         zhixueApi = restAdapter.create(ZhixueApi.class);
     }
