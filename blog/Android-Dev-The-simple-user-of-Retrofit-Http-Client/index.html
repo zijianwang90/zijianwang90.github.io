@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Andriod集成Retrofit网络请求库指南指南 | Cody.W的哈哈BLOG</title>
+  <title>Andriod集成Retrofit网络请求库指南 | Cody.W的哈哈BLOG</title>
   <meta name="author" content="Zijian Wang">
   
   <meta name="description" content="暂无描述，哈">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Andriod集成Retrofit网络请求库指南指南"/>
+  <meta property="og:title" content="Andriod集成Retrofit网络请求库指南"/>
   <meta property="og:site_name" content="Cody.W的哈哈BLOG"/>
 
   
@@ -54,7 +54,7 @@
       
       
   
-    <h1 class="title">Andriod集成Retrofit网络请求库指南指南</h1>
+    <h1 class="title">Andriod集成Retrofit网络请求库指南</h1>
   
 
     </header>
@@ -65,6 +65,10 @@
 <p>所以本文意在给大家更加详细的讲解如何简单的使用Retrofit。鉴于本人技术有限，对Retrofit的实现原理以及源码等分析做的并不透彻，只是向大家简要介绍Retrofit的使用，使得像我一样的新手能够快速的上手入门。也希望大家向我提出宝贵的意见。</p>
 <hr>
 <p>有关更多API文档的查阅请大家到<a href="http://square.github.io/retrofit/" target="_blank" rel="external">Retrofit官网</a>查看。</p>
+<p>首先咱先把Retrofit集成到项目中来:</p>
+<pre><code>compile 'com.squareup.retrofit:retrofit:1.9.0'
+</code></pre>
+
 <p>以下，我将以我们的产品“<a href="http://sj.qq.com/myapp/detail.htm?apkName=com.cxtimes.zhixue" target="_blank" rel="external">知学</a>”中所用到的一些网络请求来为大家阐述Retrofit的简单使用。</p>
 <p>对Retrofit而言，有两个类是非常关键的，那就是RestAdapter和我们自定义的接口（在知学中叫做ZhixueApi），前者的的作用有很多，但我们我们必然会用到的就是<strong>指定我们请求网络的主域名</strong>。而后者则负责封装我们在项目中要用到的每一个接口。</p>
 <p>首先我们来简单了解下关于ZhixueApi的定义。在这个类中，我会介绍我们用到的几种提交方式以及参数的拼装形式。</p>
@@ -207,7 +211,7 @@ ZhixueApiUtil.getInstance().getZhixueApi().getCourseList(paramsMap, new Callback
 
 <section id="comment">
 <!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="blog/Android-Dev-The-simple-user-of-Retrofit-Http-Client/" data-title="Andriod集成Retrofit网络请求库指南指南" data-url="http://zijianwang.xyz/blog/Android-Dev-The-simple-user-of-Retrofit-Http-Client/"></div>
+	<div class="ds-thread" data-thread-key="blog/Android-Dev-The-simple-user-of-Retrofit-Http-Client/" data-title="Andriod集成Retrofit网络请求库指南" data-url="http://zijianwang.xyz/blog/Android-Dev-The-simple-user-of-Retrofit-Http-Client/"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
