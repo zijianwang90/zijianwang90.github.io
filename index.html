@@ -62,6 +62,56 @@ var _hmt = _hmt || [];
     <header>
       
         <div class="icon"></div>
+        <time datetime="2015-05-28T18:40:11.000Z"><a href="/blog/Android-M-Auto-Backup-Runthrough/">2015-05-28</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/Android-M-Auto-Backup-Runthrough/">Andriod M新特性：应用数据自动备份之浅析</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>昨天晚上看完了IO 2015的Keynote，今天就来了官网看看有什么<a href="http://developer.android.com/preview/api-overview.html" target="_blank" rel="external">新API与新特性</a><br>目前来看，有三点：<a href="http://developer.android.com/preview/features/runtime-permissions.html" target="_blank" rel="external">Permissions</a>，<a href="http://developer.android.com/preview/features/app-linking.html" target="_blank" rel="external">App Links</a>，<a href="http://developer.android.com/preview/backup/index.html" target="_blank" rel="external">Auto Backup for Apps</a>。第一个是本次M的权限管理API，第二个是通过URL快速打开应用的相应API，而第三个，让我非常的感兴趣，那就是应用数据的自动备份。</p>
+<p>而之所以对这个应用数据自动备份产生浓厚的兴趣，源于一个场景，那就是作为一个Nexus玩家，频繁的刷机是很正常的，而频繁刷机就面临一个问题，应用的备份以及数据的备份，我往往是通过钛备份备份，或者干脆不备份。</p>
+<p>而此次的数据自动备份功能可以将应用的数据自动同步到Google Drive（意味着基本无缘天朝）。</p>
+<h2 id="本人对自动功能的一些简单的总结：">本人对自动功能的一些简单的总结：</h2><ul>
+<li>首先，自动备份功能会备份App的数据，自动上传到该设备登录用户的Google Drive里面（每个应用有最大25MB的存储空间），并且被这部分备份数据所占用的Google Drive控件不会算到你的付费控件之内，也就是这部分控件完全白送。</li>
+<li>备份24小时内随时都可能会开始备份，但是<strong>只有当用户的设备满足空闲、充电、并且连接至WIFI</strong>，只有满足以上三个条件，Backup Manager才会将可备份文件上传到云端。当用户切换到新的设备，或者卸载重装应用，用户的数据都会被恢复到新的设备上。</li>
+<li>当然，并非所有的数据都需要被备份，通过以下方法得到的目录，默认情况下都被指定为不备份目录：<a href="http://developer.android.com/reference/android/content/Context.html#getCacheDir%28%29" target="_blank" rel="external">getCacheDir()</a>, <a href="http://developer.android.com/reference/android/content/ContextWrapper.html#getCodeCacheDir%28%29" target="_blank" rel="external">getCodeCacheDir()</a>, <a href="http://developer.android.com/reference/android/content/Context.html#getExternalFilesDir%28java.lang.String%29" target="_blank" rel="external">getExternalFilesDir()</a>, <a href="http://developer.android.com/reference/android/content/Context.html#getNoBackupFilesDir%28%29" target="_blank" rel="external">getNoBackupFilesDir()</a>。</li>
+</ul>
+<h2 id="如何配置数据备份">如何配置数据备份</h2><p>对于在M Preview上安装的App，<strong>在默认情况下数据都会被备份</strong>。除了我们上述提到的一些目录，我们还可以通过Xml文件声明的形式进一步控制需要被备份的文件。配置方法大概如下：</p>
+<p>首先在我们的Manifest清单文件中声明android:fullBackupContent并且配置相关的xml文件来决定什么文件备份或不备份。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">manifest</span> <span class="attribute">xmlns:android</span>=<span class="value">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">        <span class="attribute">xmlns:tools</span>=<span class="value">"http://schemas.android.com/tools"</span></span><br><span class="line">        <span class="attribute">package</span>=<span class="value">"com.my.appexample"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">uses-sdk</span> <span class="attribute">android:minSdkVersion</span>=<span class="value">"MNC"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">uses-sdk</span> <span class="attribute">android:targetSdkVersion</span>=<span class="value">"MNC"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">app</span> <span class="attribute">...</span></span><br><span class="line">        <span class="attribute">android:fullBackupContent</span>=<span class="value">"@xml/mybackupscheme"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">app</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="title">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>mybackupscheme.xml的位置位于res/xml下，配置方式大致如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">full-backup-content</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">exclude</span> <span class="attribute">domain</span>=<span class="value">"database"</span> <span class="attribute">path</span>=<span class="value">"device_info.db"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">full-backup-content</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="备份设置语法">备份设置语法</h2><p>首先需要明确的是，这个备份配置允许我们制定哪些文件需要被备份，哪些不需要<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">full-backup-content</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">domain</span>=<span class="value">["file"</span> | "<span class="attribute">database</span>" | "<span class="attribute">sharedpref</span>" | "<span class="attribute">external</span>" | "<span class="attribute">root</span>"] <span class="attribute">path</span>=<span class="value">"string"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">exclude</span> <span class="attribute">domain</span>=<span class="value">["file"</span> | "<span class="attribute">database</span>" | "<span class="attribute">sharedpref</span>" | "<span class="attribute">external</span>" | "<span class="attribute">root</span>"] <span class="attribute">path</span>=<span class="value">"string"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">full-backup-content</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>以下是我们在备份配置文件中可以用到的元素：<br><figure class="highlight"><figcaption><span>指定哪些元素需要被备份，**一旦我们指定了这个标签，系统会只备份在这里声明的文件，而不会跟着系统默认走。**</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">```&#60;exclude&#62;``` &#25351;&#23450;&#21738;&#20123;&#19981;&#34987;&#31995;&#32479;&#33258;&#21160;&#22791;&#20221;&#10;```domain.``` &#25351;&#23450;&#34987;include&#25110;&#32773;exlude&#30340;&#36164;&#28304;&#31867;&#22411;&#65292;&#26377;&#20197;&#19979;&#20960;&#31181;&#65306;&#10;- ```root``` &#24212;&#29992;root&#30446;&#24405;&#19979;&#30340;&#36164;&#28304;&#10;- ```file``` &#36890;&#36807;[getFilesDir()][9]&#26041;&#27861;&#33021;&#22815;&#25343;&#21040;&#30340;&#36164;&#28304;&#10;- ```database``` &#36890;&#36807;[getDatabasePath()][10]&#26041;&#27861;&#25110;&#32773;&#36890;&#36807;[SQLiteOpenHelper][11]&#25343;&#21040;&#30340;&#25968;&#25454;&#24211;&#36164;&#28304;&#10;- ```sharedpref``` &#36890;&#36807;[getSharedPreferences()][12]&#26041;&#27861;&#33021;&#22815;&#25343;&#21040;&#30340;[SharedPreferences][13]&#23545;&#35937;&#21450;&#25968;&#25454;&#10;- ```external``` &#36890;&#36807;[getExternalFilesDir()][14]&#26041;&#27861;&#33021;&#25343;&#21040;&#30340;&#22806;&#37096;&#23384;&#20648;&#30446;&#24405;&#19979;&#30340;&#36164;&#28304;&#10;- ```path``` &#36890;&#36807;&#25105;&#20204;&#25163;&#21160;&#25351;&#23450;&#30340;&#30446;&#24405;&#10;&#10;##&#31105;&#27490;&#33258;&#21160;&#22791;&#20221;&#10;&#24403;&#28982;&#25105;&#20204;&#21516;&#26679;&#33021;&#22815;&#31105;&#27490;&#31995;&#32479;&#23558;&#24212;&#29992;&#25968;&#25454;&#22791;&#20221;&#21040;&#35895;&#27468;&#20113;&#31471;&#30828;&#30424;&#65292;&#37197;&#32622;&#20063;&#24456;&#31616;&#21333;&#65292;&#21482;&#35201;&#22312;Manifest&#25991;&#20214;&#20013;&#20570;&#20986;&#22914;&#19979;&#37197;&#32622;&#21363;&#21487;&#10;```xml&#10;&#60;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&#62;&#10;&#60;manifest xmlns:android=&#34;http://schemas.android.com/apk/res/android&#34;&#10;        xmlns:tools=&#34;http://schemas.android.com/tools&#34;&#10;        package=&#34;com.my.appexample&#34;&#62;&#10;    &#60;uses-sdk android:minSdkVersion=&#34;MNC&#34;/&#62;&#10;    &#60;uses-sdk android:targetSdkVersion=&#34;MNC&#34;/&#62;&#10;    &#60;app ...&#10;        android:allowBackup=&#34;false&#34;&#62;&#10;    &#60;/app&#62;&#10;    ...&#10;&#60;/manifest&#62;</span><br></pre></td></tr></table></figure></p>
+<p>以上，为大家简单介绍了Android M中的全新特性，应用数据自动备份。相信大家也对其有了一定的了解。进一步的信息大家可以移步官方文档，在官方文档中还涉及到了如何调试应用数据备份功能。随着Android M的正式发布，API文档也许会发生一定的变化。</p>
+<p>大家也可以<a href="https://github.com/googlesamples/android-AutoBackupForApps" target="_blank" rel="external">移步这里</a>，来查看谷歌官方的自动备份demo</p>
+<p>最后的最后，在观看了此次2015 IO大会的Keynote之后，也深深感慨谷歌有这么多强大的API，强大的功能，Google Now，Wear等等等，而国内的安卓开发者却有很多都感受不到。</p>
+<p>  <a href="https://github.com/googlesamples/android-AutoBackupForApps" target="_blank" rel="external">14</a>: <a href="http://developer.android.com/reference/android/content/Context.html#getExternalFilesDir%28java.lang.String%29" target="_blank" rel="external">http://developer.android.com/reference/android/content/Context.html#getExternalFilesDir%28java.lang.String%29</a> <a href="http://developer.android.com/reference/android/content/SharedPreferences.html" target="_blank" rel="external">13</a>: <a href="http://developer.android.com/reference/android/content/SharedPreferences.html" target="_blank" rel="external">http://developer.android.com/reference/android/content/SharedPreferences.html</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2015-05-26T16:02:24.000Z"><a href="/blog/Android-How-to-get-response-JSON-in-Retrofit/">2015-05-26</a></time>
       
       
@@ -163,7 +213,11 @@ var _hmt = _hmt || [];
   <h3 class="title">Tags</h3>
   <ul class="entry">
   
-    <li><a href="/tags/Android/">Android</a><small>2</small></li>
+    <li><a href="/tags/Android/">Android</a><small>3</small></li>
+  
+    <li><a href="/tags/Android-M/">Android M</a><small>1</small></li>
+  
+    <li><a href="/tags/Auto-Backup/">Auto Backup</a><small>1</small></li>
   
     <li><a href="/tags/Retrofit/">Retrofit</a><small>2</small></li>
   
