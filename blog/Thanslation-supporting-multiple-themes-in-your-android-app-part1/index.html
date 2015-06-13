@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>翻译：另你的Android应用支持多主题——上 | Cody.W的哈哈BLOG</title>
+  <meta name="author" content="Zijian Wang">
+  
+  <meta name="description" content="暂无描述，哈">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="翻译：另你的Android应用支持多主题——上"/>
+  <meta property="og:site_name" content="Cody.W的哈哈BLOG"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Cody.W的哈哈BLOG" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+  
+<script type="text/javascript">
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?fac7581aaee317d2fe1f7a0fc8d1f214";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Cody.W的哈哈BLOG</a></h1>
+  <h2><a href="/">欢迎大家来讨论</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-06-12T13:44:40.000Z"><a href="/blog/Thanslation-supporting-multiple-themes-in-your-android-app-part1/">2015-06-12</a></time>
+      
+      
+  
+    <h1 class="title">翻译：另你的Android应用支持多主题——上</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p><a href="http://www.hidroh.com/2015/02/16/support-multiple-themes-android-app/" target="_blank" rel="external">原文地址</a></p>
+<p><img src="http://www.hidroh.com/assets/img/multiple-theme-dark.png" alt="Dark主题"><img src="http://www.hidroh.com/assets/img/multiple-theme-light.png" alt="Light主题"></p>
+<p>最近，我在开发我自己的新闻软件，Materialistic。正如大多数新闻软件一样，一个最受欢迎的功能就是给予用户在白天及夜间模式下的切换。正好，Android原生对一个应用多套主题作了很好的支持。这篇博文会想你讲解Materialistic应用中，是如何实现多主体的。</p>
+<p>首先你需要：</p>
+<ul>
+<li>至少两套继承自light/dark的themes。如果你已经使用了最新的appcompat-v7，那就是Theme.AppCompat.Light或Theme.AppCompat.Light.DarkActionBar(light)和Theme.AppCompat(dark)。</li>
+<li>对应两套主题的调色板，相关资料可以在Google官网找到（译者：<a href="https://www.google.com/design/spec/style/color.html#" target="_blank" rel="external">点这里直达</a>）</li>
+<li>[可选]对应不同颜色的工具栏图标。根据你集成的方式，图标颜色会自动的变换，这意味着你只需要为其中的一套主题准备一套图标即可。或者，在我的应用中，我选择多套图标对应不同的主题。</li>
+</ul>
+<p>接下来我们先来从Light主题开始：</p>
+<p><strong>values/styles.xml</strong><br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;style <span class="property">name</span>=<span class="string">"AppTheme"</span> parent=<span class="string">"Theme.AppCompat.Light"</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"colorPrimary"</span>&gt;@color/colorPrimary&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"colorPrimaryDark"</span>&gt;@color/colorPrimaryDark&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"colorAccent"</span>&gt;@color/colorAccent&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"android:textColorPrimary"</span>&gt;@color/textColorPrimary&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"android:textColorSecondary"</span>&gt;@color/textColorSecondary&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"android:textColorPrimaryInverse"</span>&gt;@color/textColorPrimaryInverse&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"android:textColorSecondaryInverse"</span>&gt;@color/textColorSecondaryInverse&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;!<span class="comment">-- 一些其他的颜色配置如actionbar，overflow menu等等等 --&gt;</span></span><br><span class="line">    ...</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure></p>
+<p><strong>values/colors.xml</strong><br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 主色: 橙 --&gt;</span><br><span class="line">&lt;<span class="attribute">color</span> name=<span class="string">"colorPrimary"</span>&gt;<span class="hexcolor">#FF9800</span>&lt;/<span class="attribute">color</span>&gt;</span><br><span class="line">&lt;<span class="attribute">color</span> name=<span class="string">"colorPrimaryDark"</span>&gt;<span class="hexcolor">#F57C00</span>&lt;/<span class="attribute">color</span>&gt;</span><br><span class="line">&lt;<span class="attribute">color</span> name=<span class="string">"colorPrimaryLight"</span>&gt;<span class="hexcolor">#FFE0B2</span>&lt;/<span class="attribute">color</span>&gt;</span><br><span class="line">&lt;!-- 重点色: 红 --&gt;</span><br><span class="line">&lt;<span class="attribute">color</span> name=<span class="string">"colorAccent"</span>&gt;<span class="hexcolor">#FF5252</span>&lt;/<span class="attribute">color</span>&gt;</span><br><span class="line">&lt;!-- 字色：白 --&gt;</span><br><span class="line">&lt;<span class="attribute">color</span> name=<span class="string">"textColorPrimary"</span>&gt;<span class="hexcolor">#FFFFFF</span>&lt;/<span class="attribute">color</span>&gt;</span><br><span class="line">&lt;<span class="attribute">color</span> name=<span class="string">"textColorSecondary"</span>&gt;<span class="hexcolor">#9E9E9E</span>&lt;/<span class="attribute">color</span>&gt;</span><br><span class="line">&lt;!-- 与主字色相反的字色：黑 --&gt;</span><br><span class="line">&lt;<span class="attribute">color</span> name=<span class="string">"textColorPrimaryInverse"</span>&gt;<span class="hexcolor">#DE0000</span>00&lt;/<span class="attribute">color</span>&gt;</span><br><span class="line">&lt;<span class="attribute">color</span> name=<span class="string">"textColorSecondaryInverse"</span>&gt;<span class="hexcolor">#9E9E9E</span>&lt;/<span class="attribute">color</span>&gt;</span><br></pre></td></tr></table></figure></p>
+<p><strong>AndroidManifest.xml</strong></p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="type">application</span> android:<span class="property">name</span>=<span class="string">".Application"</span> android:theme=<span class="string">"@style/AppTheme"</span>&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;/<span class="type">application</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>更多的Theme相关属性可以<a href="http://android-developers.blogspot.sg/2014/10/appcompat-v21-material-design-for-pre.html" target="_blank" rel="external">谷歌官方博客</a>中找到。</p>
+<blockquote>
+<p><strong>提示</strong><br>建议先做一个demo来尝试有哪些主题属性能够达到我们预期的效果，Android官方文档在对于主题属性的解释，尤其是对于appcompat，是比较匮乏的。</p>
+</blockquote>
+<p>Option menus中的图标颜色会和action bar text color相同，就是我们定义的<figure class="highlight"><figcaption><span>bar提供一套白色的icon图标。</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#10;&#62;**&#25552;&#31034;**&#10;&#35895;&#27468;&#22312;[Github][6]&#19978;&#24320;&#25918;&#20102;&#19968;&#20123;MD&#39118;&#26684;&#30340;&#22270;&#26631;&#10;&#10;**menu/my_menu.xml**</span><br></pre></td></tr></table></figure></p>
+<p><menu xmlns:android="http://schemas.android.com/apk/res/android"><br>    <item android:id="@id/menu_comment" android:icon="@drawable/ic_mode_comment_white_24dp"><br>    <item android:id="@id/menu_story" android:icon="@drawable/ic_subject_white_24dp"><br>    <item android:id="@id/menu_share" app:actionproviderclass="android.support.v7.widget.ShareActionProvider"><br></item></item></item></menu><br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">To enable consistent color, <span class="keyword">and</span> make our views <span class="keyword">and</span> texts ready <span class="keyword">for</span> multiple themes, <span class="keyword">it</span>’s best <span class="keyword">that</span> we specify their colors <span class="keyword">as</span> color resource <span class="keyword">reference</span>, e.g. android:textColor=<span class="string">"@color/textColorPrimary"</span>, <span class="keyword">or</span> via style, e.g. textEmptyStyle style <span class="keyword">below</span>, using only a limited <span class="keyword">set</span> <span class="keyword">of</span> colors <span class="keyword">from</span> your chosen color palette.</span><br><span class="line">为了我们的各种控件和文字更好的支持多主题，我们最好是在布局文件中通过引用资源文件的形式生命颜色，如```android:textColor=<span class="string">"@color/textColorPrimary"</span>```，或者通过style的形式，如下面的```textEmptyStyle```。</span><br><span class="line"></span><br><span class="line">**values/styles.xml**</span><br></pre></td></tr></table></figure></p>
+<p><style name="textEmptyStyle"><br>    <item name="android:textColor">@color/textColorSecondary</item><br>    <item name="android:textSize">@dimen/abc_text_size_headline_material</item><br>    …<br></style><br>```</p>
+<p>以上，我们便配置好了一个light主题的MD风格app。在下一篇文章中，我们将讲解如何配置dark风格主题并在代码中动态的切换。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/tags/Android-Devlopment/">Android Devlopment</a>, <a href="/tags/Multiple-Theme/">Multiple Theme</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+    
+      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="blog/Thanslation-supporting-multiple-themes-in-your-android-app-part1/" data-title="翻译：另你的Android应用支持多主题——上" data-url="http://zijianwang.xyz/blog/Thanslation-supporting-multiple-themes-in-your-android-app-part1/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"zijianwang"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:zijianwang.xyz">
+  </form>
+</div>
+
+  
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Android/">Android</a><small>3</small></li>
+  
+    <li><a href="/tags/Android-Devlopment/">Android Devlopment</a><small>2</small></li>
+  
+    <li><a href="/tags/Android-M/">Android M</a><small>1</small></li>
+  
+    <li><a href="/tags/Auto-Backup/">Auto Backup</a><small>1</small></li>
+  
+    <li><a href="/tags/Multiple-Theme/">Multiple Theme</a><small>2</small></li>
+  
+    <li><a href="/tags/Retrofit/">Retrofit</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2015 Zijian Wang
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
