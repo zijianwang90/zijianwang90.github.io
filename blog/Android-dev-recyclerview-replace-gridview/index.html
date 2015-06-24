@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用RecyclerView打造类支付宝首页的GridView效果 | Cody.W的哈哈BLOG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="大家好，这两天在我们的项目知学中，有一个全新的首页需求，最终实现的效果如下
+这也是类似支付宝首页的那种网格效果。抛开顶部的轮播图不说，下面那个表格大家首先想到的可能就是GridView。但是，既然我们已经有了全新且强大的RecyclerView控件，就可以在绝大多数场景下抛弃ListView或者GridView了。而对于RecyclerView替代ListView，相信大家已经有了一定的了解并在项">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用RecyclerView打造类支付宝首页的GridView效果">
+<meta property="og:url" content="http://zijianwang.xyz/blog/Android-dev-recyclerview-replace-gridview/index.html">
+<meta property="og:site_name" content="Cody.W的哈哈BLOG">
+<meta property="og:description" content="大家好，这两天在我们的项目知学中，有一个全新的首页需求，最终实现的效果如下
+这也是类似支付宝首页的那种网格效果。抛开顶部的轮播图不说，下面那个表格大家首先想到的可能就是GridView。但是，既然我们已经有了全新且强大的RecyclerView控件，就可以在绝大多数场景下抛弃ListView或者GridView了。而对于RecyclerView替代ListView，相信大家已经有了一定的了解并在项">
+<meta property="og:image" content="http://7xj95v.com1.z0.glb.clouddn.com/Screenshot_2015-06-24-13-25-30.png">
+<meta property="og:image" content="http://7xj95v.com1.z0.glb.clouddn.com/Screenshot_2015-06-23-20-32-28.png">
+<meta property="og:image" content="http://7xj95v.com1.z0.glb.clouddn.com/Screenshot_2015-06-23-20-58-39.png">
+<meta property="og:updated_time" content="2015-06-24T08:23:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用RecyclerView打造类支付宝首页的GridView效果">
+<meta name="twitter:description" content="大家好，这两天在我们的项目知学中，有一个全新的首页需求，最终实现的效果如下
+这也是类似支付宝首页的那种网格效果。抛开顶部的轮播图不说，下面那个表格大家首先想到的可能就是GridView。但是，既然我们已经有了全新且强大的RecyclerView控件，就可以在绝大多数场景下抛弃ListView或者GridView了。而对于RecyclerView替代ListView，相信大家已经有了一定的了解并在项">
+  
+    <link rel="alternative" href="/atom.xml" title="Cody.W的哈哈BLOG" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Cody.W的哈哈BLOG</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">欢迎大家来讨论</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://zijianwang.xyz"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Android-dev-recyclerview-replace-gridview" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/Android-dev-recyclerview-replace-gridview/" class="article-date">
+  <time datetime="2015-06-23T20:09:55.000Z" itemprop="datePublished">2015-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用RecyclerView打造类支付宝首页的GridView效果
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="大家好，这两天在我们的项目知学中，有一个全新的首页需求，最终实现的效果如下">大家好，这两天在我们的项目<a href="http://android.myapp.com/myapp/detail.htm?apkName=com.cxtimes.zhixue" target="_blank" rel="external">知学</a>中，有一个全新的首页需求，最终实现的效果如下</h1><p><img src="http://7xj95v.com1.z0.glb.clouddn.com/Screenshot_2015-06-24-13-25-30.png" alt="知学新首页"></p>
+<h2 id="这也是类似支付宝首页的那种网格效果。">这也是类似支付宝首页的那种网格效果。</h2><p>抛开顶部的轮播图不说，下面那个表格大家首先想到的可能就是GridView。但是，既然我们已经有了全新且强大的RecyclerView控件，就可以在绝大多数场景下抛弃ListView或者GridView了。而对于RecyclerView替代ListView，相信大家已经有了一定的了解并在项目中有了一定的应用，但是对于RecyclerView替代GridView的使用，可能大家还些许陌生。接下来在这篇文章中就为大家详细讲述<strong>如何使用RecyclerView一个控件</strong>，搞定类似这样子的首页。</p>
+<h3 id="集成RecyclerView、">集成RecyclerView、</h3><p>首先，如果你还从未试用过RecyclerView，当然是要在build.gradle中做出如下配置从而集成RecyclerView<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">compile</span> <span class="string">'com.android.support:recyclerview-v7:22.2.0'</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="布局">布局</h3><p>现在我们在MainActivity简单的实现我们想要的效果，那么在activity_main.xml只要有一个RecyclerView就可以了。如下：<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;RelativeLayout xmlns:<span class="variable">android=</span><span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    xmlns:<span class="variable">tools=</span><span class="string">"http://schemas.android.com/tools"</span></span><br><span class="line">    android:<span class="variable">layout_width=</span><span class="string">"match_parent"</span></span><br><span class="line">    android:<span class="variable">layout_height=</span><span class="string">"match_parent"</span></span><br><span class="line">    tools:<span class="variable">context=</span><span class="string">".MainActivity"</span>&gt;</span><br><span class="line"></span><br><span class="line">    &lt;android.support.v7.widget.RecyclerView</span><br><span class="line">        android:<span class="variable">id=</span><span class="string">"@+id/home_rv"</span></span><br><span class="line">        android:<span class="variable">layout_width=</span><span class="string">"match_parent"</span></span><br><span class="line">        android:<span class="variable">layout_height=</span><span class="string">"match_parent"</span> /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/RelativeLayout&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Adapter">Adapter</h3><p>首先，我们先来看一下Adapter是如何编写的<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAdapter</span> <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">Adapter</span> </span>&#123;</span><br><span class="line">    <span class="comment">//先定义两个ItemViewType，0代表头，1代表表格中间的部分</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ITEM_VIEW_TYPE_HEADER = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ITEM_VIEW_TYPE_ITEM = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">//数据源</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; dataList;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造函数</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyAdapter</span><span class="params">(List&lt;String&gt; dataList)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dataList = dataList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 判断当前position是否处于第一个</span><br><span class="line">     * <span class="doctag">@param</span> position</span><br><span class="line">     * <span class="doctag">@return</span></span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isHeader</span><span class="params">(<span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> position == <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="keyword">public</span> RecyclerView.<span class="function">ViewHolder <span class="title">onCreateViewHolder</span><span class="params">(ViewGroup viewGroup, <span class="keyword">int</span> viewType)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//在onCreateViewHolder方法中，我们要根据不同的ViewType来返回不同的ViewHolder</span></span><br><span class="line">        <span class="keyword">if</span> (viewType == ITEM_VIEW_TYPE_HEADER) &#123;</span><br><span class="line">            <span class="comment">//对于Header，我们应该返回填充有Header对应布局文件的ViewHolder（再次我们返回的都是一个布局文件，请根据不同的需求做相应的改动）</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> HeaderViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_item, <span class="keyword">null</span>));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//对于Body中的item，我们也返回所对应的ViewHolder</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> BodyViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_item, <span class="keyword">null</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBindViewHolder</span><span class="params">(RecyclerView.ViewHolder viewHolder, <span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isHeader(position)) &#123;</span><br><span class="line">            <span class="comment">//大家在这里面处理头，这里只有一个TextView，大家可以根据自己的逻辑做修改</span></span><br><span class="line">            ((HeaderViewHolder)viewHolder).getTextView().setText(<span class="string">"This is the Header!!"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//其他条目中的逻辑在此</span></span><br><span class="line">            ((BodyViewHolder) viewHolder).getTextView().setText(dataList.get(position - <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 总条目数量是数据源数量+1，因为我们有个Header</span><br><span class="line">     * <span class="doctag">@return</span></span><br><span class="line">     */</span></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getItemCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dataList.size() + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * </span><br><span class="line">     * 复用getItemViewType方法，根据位置返回相应的ViewType</span><br><span class="line">     * <span class="doctag">@param</span> position</span><br><span class="line">     * <span class="doctag">@return</span></span><br><span class="line">     */</span></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getItemViewType</span><span class="params">(<span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//如果是0，就是头，否则则是其他的item</span></span><br><span class="line">        <span class="keyword">return</span> isHeader(position) ? ITEM_VIEW_TYPE_HEADER : ITEM_VIEW_TYPE_ITEM;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 给头部专用的ViewHolder，大家根据需求自行修改</span><br><span class="line">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HeaderViewHolder</span> <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">ViewHolder</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> TextView textView;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">HeaderViewHolder</span><span class="params">(View itemView)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(itemView);</span><br><span class="line">            textView = (TextView) itemView.findViewById(R.id.item_tv);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> TextView <span class="title">getTextView</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> textView;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 给GridView中的条目用的ViewHolder，里面只有一个TextView</span><br><span class="line">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BodyViewHolder</span> <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">ViewHolder</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> TextView textView;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">BodyViewHolder</span><span class="params">(View itemView)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(itemView);</span><br><span class="line">            textView = (TextView) itemView.findViewById(R.id.item_tv);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> TextView <span class="title">getTextView</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> textView;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Item布局文件：<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;RelativeLayout xmlns:<span class="variable">android=</span><span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    android:<span class="variable">layout_width=</span><span class="string">"match_parent"</span></span><br><span class="line">    android:<span class="variable">layout_height=</span><span class="string">"wrap_content"</span></span><br><span class="line">    android:<span class="variable">orientation=</span><span class="string">"vertical"</span>&gt;</span><br><span class="line"></span><br><span class="line">    &lt;TextView</span><br><span class="line">        android:<span class="variable">id=</span><span class="string">"@+id/item_tv"</span></span><br><span class="line">        android:<span class="variable">layout_width=</span><span class="string">"match_parent"</span></span><br><span class="line">        android:<span class="variable">layout_height=</span><span class="string">"100dp"</span></span><br><span class="line">        android:<span class="variable">gravity=</span><span class="string">"center"</span> /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/RelativeLayout&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Activity">Activity</h3><p>接下来再来看看我们在Activity中的代码如何编写<br><figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> class MainActivity extends Activity &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//找到RecyclerView控件</span></span><br><span class="line">        RecyclerView home_rv = (RecyclerView) findViewById(R.id.home_rv);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//做一些假数据</span></span><br><span class="line">        List&lt;<span class="keyword">String</span>&gt; dataList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第一个"</span>);</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第二个"</span>);</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第三个"</span>);</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第四个"</span>);</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第五个"</span>);</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第六个"</span>);</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第七个"</span>);</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第八个"</span>);</span><br><span class="line">        dataList.<span class="built_in">add</span>(<span class="string">"第九个"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//实例化Adapter并且给RecyclerView设上</span></span><br><span class="line">        <span class="keyword">final</span> MyAdapter adapter = <span class="keyword">new</span> MyAdapter(dataList);</span><br><span class="line">        home_rv.setAdapter(adapter);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果我们想要一个GridView形式的RecyclerView，那么在LayoutManager上我们就要使用GridLayoutManager</span></span><br><span class="line">        <span class="comment">// 实例化一个GridLayoutManager，列数为3</span></span><br><span class="line">        <span class="keyword">final</span> GridLayoutManager layoutManager = <span class="keyword">new</span> GridLayoutManager(<span class="keyword">this</span>, <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//调用以下方法让RecyclerView的第一个条目仅为1列</span></span><br><span class="line">        layoutManager.setSpanSizeLookup(<span class="keyword">new</span> GridLayoutManager.SpanSizeLookup() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            <span class="keyword">public</span> <span class="built_in">int</span> getSpanSize(<span class="built_in">int</span> position) &#123;</span><br><span class="line">                <span class="comment">//如果位置是0，那么这个条目将占用SpanCount()这么多的列数，再此也就是3</span></span><br><span class="line">                <span class="comment">//而如果不是0，则说明不是Header，就占用1列即可</span></span><br><span class="line">                <span class="keyword">return</span> adapter.isHeader(position) ? layoutManager.getSpanCount() : <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//把LayoutManager设置给RecyclerView</span></span><br><span class="line">        home_rv.setLayoutManager(layoutManager);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>好了，接下来我们运行一下看看效果吧！<br><img src="http://7xj95v.com1.z0.glb.clouddn.com/Screenshot_2015-06-23-20-32-28.png" alt="初步效果"></p>
+<h2 id="好了，那么和效果图还有一点点差距，就是画线！">好了，那么和效果图还有一点点差距，就是画线！</h2><p>线应该怎么画？在布局文件中画？貌似可行，但如果每个条目的边框都不规律怎么办？画一堆布局文件吗？太麻烦了。<br>所以在此就要用的RecyclerView中了另外一大特性：ItemDecoration。</p>
+<p>在此我们写了一个名为MyItemDecoration的类，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyItemDecoration</span> <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">ItemDecoration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 复写onDraw方法，从而达到在每隔条目的被绘制之前（或之后），让他先帮我们画上去几根线吧</span><br><span class="line">     *</span><br><span class="line">     * <span class="doctag">@param</span> c</span><br><span class="line">     * <span class="doctag">@param</span> parent</span><br><span class="line">     * <span class="doctag">@param</span> state</span><br><span class="line">     */</span></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas c, RecyclerView parent, RecyclerView.State state)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//先初始化一个Paint来简单指定一下Canvas的颜色，就黑的吧！</span></span><br><span class="line">        Paint paint = <span class="keyword">new</span> Paint();</span><br><span class="line">        paint.setColor(parent.getContext().getResources().getColor(android.R.color.black));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获得RecyclerView中总条目数量</span></span><br><span class="line">        <span class="keyword">int</span> childCount = parent.getChildCount();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//遍历一下</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; childCount; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//如果是第一个条目，那么我们就不画边框了</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//获得子View，也就是一个条目的View，准备给他画上边框</span></span><br><span class="line">            View childView = parent.getChildAt(i);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//先获得子View的长宽，以及在屏幕上的位置，方便我们得到边框的具体坐标</span></span><br><span class="line">            <span class="keyword">float</span> x = childView.getX();</span><br><span class="line">            <span class="keyword">float</span> y = childView.getY();</span><br><span class="line">            <span class="keyword">int</span> width = childView.getWidth();</span><br><span class="line">            <span class="keyword">int</span> height = childView.getHeight();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//根据这些点画条目的四周的线</span></span><br><span class="line">            c.drawLine(x, y, x + width, y, paint);</span><br><span class="line">            c.drawLine(x, y, x, y + height, paint);</span><br><span class="line">            c.drawLine(x + width, y, x + width, y + height, paint);</span><br><span class="line">            c.drawLine(x, y + height, x + width, y + height, paint);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//当然了，这里大家肯定是要根据自己不同的设计稿进行画线，或者画一些其他的东西，都可以在这里搞，非常方便</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(c, parent, state);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>回到我们的Activity中，加如下代码即可：</p>
+<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//把我们自定义的ItemDecoration设置给RecyclerView</span></span><br><span class="line">home_rv.addItemDecoration<span class="params">(new MyItemDecoration<span class="params">()</span>)</span>;</span><br></pre></td></tr></table></figure>
+<p>最后再看看是什么效果：</p>
+<p><img src="http://7xj95v.com1.z0.glb.clouddn.com/Screenshot_2015-06-23-20-58-39.png" alt="最终效果"></p>
+<p>当然，尽管最终效果有一些瑕疵，但是相信大家已经都基本明白了其中的思路，应用在自己的项目中的时候必然也要做出相应的调整。</p>
+<h2 id="最后，不得不说，现在RecyclerView已经基本具备了替代ListView和GridView的能力，在我们的项目知学中，大多数的列表都已经是以RecyclerView控件的形式作为展现。本文仅仅是从一个非常入门级的角度去讲解如何使用RecyclerView，而对于这个效果而言，还有很多种其他的实现方式，尤其是对于Adapter中的处理，也希望能够与大家多多交流。谢谢！">最后，不得不说，现在RecyclerView已经基本具备了替代ListView和GridView的能力，在我们的项目知学中，大多数的列表都已经是以RecyclerView控件的形式作为展现。本文仅仅是从一个非常入门级的角度去讲解如何使用RecyclerView，而对于这个效果而言，还有很多种其他的实现方式，尤其是对于Adapter中的处理，也希望能够与大家多多交流。谢谢！</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://zijianwang.xyz/blog/Android-dev-recyclerview-replace-gridview/" data-id="cibahunvf0000orfyc7fhj856" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android-Devlopment/">Android Devlopment</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Grid-View/">Grid View</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Recycler-View/">Recycler View</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/blog/Translation-PSA-fix-MultiDex-build-crashes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">翻译：如何修复编译时的MultiDex崩溃</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android-Devlopment/">Android Devlopment</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android-M/">Android M</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Auto-Backup/">Auto Backup</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Grid-View/">Grid View</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MultiDex/">MultiDex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Multiple-Theme/">Multiple Theme</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Recycler-View/">Recycler View</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/">Retrofit</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/">Translation</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/Android-Devlopment/" style="font-size: 20px;">Android Devlopment</a> <a href="/tags/Android-M/" style="font-size: 10px;">Android M</a> <a href="/tags/Auto-Backup/" style="font-size: 10px;">Auto Backup</a> <a href="/tags/Grid-View/" style="font-size: 10px;">Grid View</a> <a href="/tags/MultiDex/" style="font-size: 10px;">MultiDex</a> <a href="/tags/Multiple-Theme/" style="font-size: 13.33px;">Multiple Theme</a> <a href="/tags/Recycler-View/" style="font-size: 10px;">Recycler View</a> <a href="/tags/Retrofit/" style="font-size: 13.33px;">Retrofit</a> <a href="/tags/Translation/" style="font-size: 10px;">Translation</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/Android-dev-recyclerview-replace-gridview/">使用RecyclerView打造类支付宝首页的GridView效果</a>
+          </li>
+        
+          <li>
+            <a href="/blog/Translation-PSA-fix-MultiDex-build-crashes/">翻译：如何修复编译时的MultiDex崩溃</a>
+          </li>
+        
+          <li>
+            <a href="/blog/Thanslation-supporting-multiple-themes-in-your-android-app-part2/">翻译：另你的Android应用支持多主题——下</a>
+          </li>
+        
+          <li>
+            <a href="/blog/Thanslation-supporting-multiple-themes-in-your-android-app-part1/">翻译：另你的Android应用支持多主题——上</a>
+          </li>
+        
+          <li>
+            <a href="/blog/Android-M-Auto-Backup-Runthrough/">Andriod M新特性：应用数据自动备份之浅析</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Zijian Wang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
