@@ -54,11 +54,11 @@
 <meta name="description" content="原文链接 : PSA: fix MultiDex build crashes
 原文作者 : Sebastiano Poggi
 译文出自 :  开发技术前线 www.devtf.cn
-译者 : zijianwang90 
+译者 : zijianwang90
 
 
 本文是我为android-tech-frontier项目翻译的一篇文章，有兴趣的可以移步该项目github[“太长不想看了”在文章末尾]
-是否有那么一天，你曾经在编译你的项目时">
+是否有那么一天，你曾经在编译你的项目时候">
 <meta property="og:type" content="article">
 <meta property="og:title" content="翻译：如何修复编译时的MultiDex崩溃">
 <meta property="og:url" content="http://zijianwang.xyz/blog/Translation-PSA-fix-MultiDex-build-crashes/index.html">
@@ -66,22 +66,22 @@
 <meta property="og:description" content="原文链接 : PSA: fix MultiDex build crashes
 原文作者 : Sebastiano Poggi
 译文出自 :  开发技术前线 www.devtf.cn
-译者 : zijianwang90 
+译者 : zijianwang90
 
 
 本文是我为android-tech-frontier项目翻译的一篇文章，有兴趣的可以移步该项目github[“太长不想看了”在文章末尾]
-是否有那么一天，你曾经在编译你的项目时">
-<meta property="og:updated_time" content="2015-06-24T03:47:56.000Z">
+是否有那么一天，你曾经在编译你的项目时候">
+<meta property="og:updated_time" content="2015-12-29T06:13:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="翻译：如何修复编译时的MultiDex崩溃">
 <meta name="twitter:description" content="原文链接 : PSA: fix MultiDex build crashes
 原文作者 : Sebastiano Poggi
 译文出自 :  开发技术前线 www.devtf.cn
-译者 : zijianwang90 
+译者 : zijianwang90
 
 
 本文是我为android-tech-frontier项目翻译的一篇文章，有兴趣的可以移步该项目github[“太长不想看了”在文章末尾]
-是否有那么一天，你曾经在编译你的项目时">
+是否有那么一天，你曾经在编译你的项目时候">
 
 
 
@@ -280,12 +280,13 @@
 <li>原文链接 : <a href="https://medium.com/sebs-top-tips/psa-fix-multidex-build-crashes-ae2b81bcf711" target="_blank" rel="external">PSA: fix MultiDex build crashes</a></li>
 <li>原文作者 : <a href="https://medium.com/@seebrock3r" target="_blank" rel="external">Sebastiano Poggi</a></li>
 <li><a href="http://www.devtf.cn" target="_blank" rel="external">译文出自 :  开发技术前线 www.devtf.cn</a></li>
-<li>译者 : <a href="https://github.com/zijianwang90" target="_blank" rel="external">zijianwang90</a> </li>
+<li>译者 : <a href="https://github.com/zijianwang90" target="_blank" rel="external">zijianwang90</a></li>
 </ul>
 </blockquote>
 <h2 id="本文是我为android-tech-frontier项目翻译的一篇文章，有兴趣的可以移步该项目github">本文是我为android-tech-frontier项目翻译的一篇文章，有兴趣的可以移步该项目<a href="https://github.com/bboyfeiyu/android-tech-frontier" target="_blank" rel="external">github</a></h2><p>[“太长不想看了”在文章末尾]</p>
 <p>是否有那么一天，你曾经在编译你的项目时候因为以下这样的错误而失败了：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">trouble writing output:</span><br><span class="line">Too many field references: <span class="number">131000</span>; max is <span class="number">65536</span>.</span><br><span class="line">You may try using --multi-dex option.</span><br></pre></td></tr></table></figure></p>
 <p>为啥？也许是最新的Play服务更新造成的，又或许是你应用中的某某统计SDK造成的。但是有一点是可以肯定的：你的应用成为了拥有超过六万五千个方法或变量的应用之一。</p>
+<a id="more"></a>
 <p>若在一年之前，这也许是个大问题。当时有一些办法可以避免这个问题，包括一些拆分dex文件的方法，但这些方法往往并不完全奏效。</p>
 <h1 id="MultiDex?">MultiDex?</h1><p>幸运的是，自从谷歌引入了<strong>MultiDex</strong>机制，上述情况就非常容易解决了。在你的build.gradle中做如下配置即可：<br><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  defaultConfig &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    multiDexEnabled <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="缺点">缺点</h2><p><strong>Multidex也有一些缺点</strong>。首先，<strong>编译时间增加</strong>。其次，在Delvik虚拟机下（非ART），由于classloader需要读取多个dex文件，所以<strong>应用的启动时间会大幅增加</strong>。</p>

@@ -53,23 +53,20 @@
 
 <meta name="description" content="原文地址
 在前面一片博文中，我们创建了一个Light主题并且为多主题切换做了一些准备工作。在这篇文章中，我们将基础创建另一套主题并且实现在代码中动态的切换。
-理想状态下，如果我们将主题看作为一种配置，我们应该在theme-xxx资源文件夹下配置我们的资源文件，例如values-dark和values-light对应不同的主题。但是，这种配置方式在这边博文写成的时候还没有被实现。
-那么我们该如何为不">
+理想状态下，如果我们将主题看作为一种配置，我们应该在theme-xxx资源文件夹下配置我们的资源文件，例如values-dark和values-light对应不同的主题。但是，这种配置方式在这边博文写成的时候还没有被实现。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="翻译：另你的Android应用支持多主题——下">
 <meta property="og:url" content="http://zijianwang.xyz/blog/Thanslation-supporting-multiple-themes-in-your-android-app-part2/index.html">
 <meta property="og:site_name" content="Cody.W的BLOG">
 <meta property="og:description" content="原文地址
 在前面一片博文中，我们创建了一个Light主题并且为多主题切换做了一些准备工作。在这篇文章中，我们将基础创建另一套主题并且实现在代码中动态的切换。
-理想状态下，如果我们将主题看作为一种配置，我们应该在theme-xxx资源文件夹下配置我们的资源文件，例如values-dark和values-light对应不同的主题。但是，这种配置方式在这边博文写成的时候还没有被实现。
-那么我们该如何为不">
-<meta property="og:updated_time" content="2015-06-13T04:02:36.000Z">
+理想状态下，如果我们将主题看作为一种配置，我们应该在theme-xxx资源文件夹下配置我们的资源文件，例如values-dark和values-light对应不同的主题。但是，这种配置方式在这边博文写成的时候还没有被实现。">
+<meta property="og:updated_time" content="2015-12-29T06:12:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="翻译：另你的Android应用支持多主题——下">
 <meta name="twitter:description" content="原文地址
 在前面一片博文中，我们创建了一个Light主题并且为多主题切换做了一些准备工作。在这篇文章中，我们将基础创建另一套主题并且实现在代码中动态的切换。
-理想状态下，如果我们将主题看作为一种配置，我们应该在theme-xxx资源文件夹下配置我们的资源文件，例如values-dark和values-light对应不同的主题。但是，这种配置方式在这边博文写成的时候还没有被实现。
-那么我们该如何为不">
+理想状态下，如果我们将主题看作为一种配置，我们应该在theme-xxx资源文件夹下配置我们的资源文件，例如values-dark和values-light对应不同的主题。但是，这种配置方式在这边博文写成的时候还没有被实现。">
 
 
 
@@ -266,6 +263,7 @@
         <span itemprop="articleBody"><p><a href="http://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/" target="_blank" rel="external">原文地址</a></p>
 <p>在前面一片博文中，我们创建了一个Light主题并且为多主题切换做了一些准备工作。在这篇文章中，我们将基础创建另一套主题并且实现在代码中动态的切换。</p>
 <p>理想状态下，如果我们将主题看作为一种配置，我们应该在theme-xxx资源文件夹下配置我们的资源文件，例如values-dark和values-light对应不同的主题。<strong>但是</strong>，这种配置方式在这边博文写成的时候还没有被实现。</p>
+<a id="more"></a>
 <p>那么我们该如何为不同的主题指定资源文件呢？如果我们观察在appcompat中资源文件是如何被放置的，我们就会对Android团队如何针对不同主题放置资源文件有了一个大概的认识。而<a href="https://play.google.com/store/apps/details?id=io.github.hidroh.materialistic" target="_blank" rel="external">Materialistic</a>正是采用这种方法。</p>
 <h3 id="配置Theme">配置Theme</h3><p><strong>values/styles.xml</strong><br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;style <span class="property">name</span>=<span class="string">"AppTheme"</span> parent=<span class="string">"Theme.AppCompat.Light"</span>&gt;</span><br><span class="line">    &lt;!<span class="comment">-- 我们此前配置的主题 --&gt;</span></span><br><span class="line">    ...</span><br><span class="line">&lt;/style&gt;</span><br><span class="line"></span><br><span class="line">&lt;style <span class="property">name</span>=<span class="string">"AppTheme.Dark"</span> parent=<span class="string">"Theme.AppCompat"</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"colorPrimary"</span>&gt;@color/colorPrimaryInverse&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"colorPrimaryDark"</span>&gt;@color/colorPrimaryDarkInverse&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"colorAccent"</span>&gt;@color/colorAccentInverse&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"android:textColorPrimary"</span>&gt;@color/textColorPrimaryInverse&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"android:textColorSecondary"</span>&gt;@color/textColorSecondaryInverse&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"android:textColorPrimaryInverse"</span>&gt;@color/textColorPrimary&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    &lt;<span class="property">item</span> <span class="property">name</span>=<span class="string">"android:textColorSecondaryInverse"</span>&gt;@color/textColorSecondary&lt;/<span class="property">item</span>&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure></p>
 <p><strong>values/colors.xml</strong><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 此前配置的调色板 --&gt;</span></span><br><span class="line">...</span><br><span class="line"><span class="comment">&lt;!-- 另外一套调色板 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">color</span> <span class="attribute">name</span>=<span class="value">"colorPrimaryInverse"</span>&gt;</span>...<span class="tag">&lt;/<span class="title">color</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">color</span> <span class="attribute">name</span>=<span class="value">"colorPrimaryDarkInverse"</span>&gt;</span>...<span class="tag">&lt;/<span class="title">color</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">color</span> <span class="attribute">name</span>=<span class="value">"colorAccentInverse"</span>&gt;</span>...<span class="tag">&lt;/<span class="title">color</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
