@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Personal Sign</title>
+    <style type="text/css">
+        body {
+            font-size: 4em;
+        }
+
+        button {
+            font-size: 1em;
+        }
+    </style>
+</head>
+
+<script type="text/javascript">
+    function post(addr, data, sig, type) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200 || xmlhttp.status == 204) {
+                    document.getElementById("result").innerHTML = "SUCCESS";
+                } else {
+                    document.getElementById("result").innerHTML = "verification FAILED: " + xmlhttp.responseText;
+                }
+            }
+        };
+
+        xmlhttp.open("POST", "/", true);
+        xmlhttp.setRequestHeader('Content-Type', 'application/json');
+        xmlhttp.send(JSON.stringify({"address": addr, "data": data, "sig": sig, "type": type}));
+    }
+
+    function get_cmt_account() {
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+            } else {
+                document.getElementById("address").innerHTML = accounts[0];
+            }
+        });
+    }
+
+    function get_balance() {
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+            } else {
+                web3.cmt.getBalance(accounts[0], function (err, balance) {
+                    document.getElementById("balance").innerHTML = balance;
+                });
+            }
+        });
+    }
+
+    function get_first_block() {
+        web3.cmt.getBlock(100, true, function (e, patchData) {
+            if (e) {
+                document.getElementById("cmtblockresult").innerHTML = "web3.cmt.getCmtBlock FAILED: " + e;
+            } else {
+                document.getElementById("cmtblockresult").innerHTML = JSON.stringify(patchData);
+            }
+        });
+    }
+
+    function personal_sign() {
+        var data = "0x48656C6C6F20576F726C64";
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+                return;
+            }
+            console.log("Signing", data, "with account", accounts[0]);
+            web3.cmt.sign(data, accounts[0], function (e, sig) {
+                if (e) {
+                    document.getElementById("result").innerHTML = "web3.personal.sign FAILED: " + e;
+                    return;
+                }
+                document.getElementById("result").innerHTML = sig;
+                console.log("Signature", sig);
+                // post(accounts[0], data, sig, "personal");
+            });
+        });
+    }
+
+    function personal_sign_with_binary_data() {
+        var data = web3.sha3("hello world");
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+                return;
+            }
+            web3.cmt.sign("hello world", accounts[0], function (e, sig) {
+                if (e) {
+                    document.getElementById("result").innerHTML = "web3.personal.sign FAILED: " + e;
+                    return;
+                }
+                document.getElementById("result").innerHTML = sig;
+                // post(accounts[0], data, sig, "personal");
+            });
+        });
+    }
+
+
+    function eth_sign() {
+        var data = "xyz";
+        console.log(web3.sha3(data));
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+                return;
+            }
+            web3.cmt.sign(web3.sha3(data), accounts[0], function (e, sig) {
+                if (e) {
+                    document.getElementById("result").innerHTML = "web3.cmt.sign FAILED: " + e;
+                    return;
+                }
+                document.getElementById("result").innerHTML = sig;
+                // post(accounts[0], data, sig, "eth");
+            });
+        });
+    }
+
+    function bad_eth_sign() {
+        var data = "xyz";
+        console.log(web3.sha3(data));
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+                return;
+            }
+            web3.cmt.sign(accounts[0], data, function (e, sig) {
+                if (e) {
+                    document.getElementById("result").innerHTML = "SUCCESS (failed correctly)";
+                    return;
+                }
+                document.getElementById("result").innerHTML = "FAILED (didn't fail)";
+            });
+        });
+    }
+
+    function sendtx() {
+        web3.cmt.sendTransaction({
+            to: "0x011c6dd9565b8b83e6a9ee3f06e89ece3251ef2f",
+            value: 500000000000000000,
+            data: 0x454a2ab30000000000000000000000000000000000000000000000000000000000015619
+        }, function (e, tx) {
+            if (e) {
+                console.log(e);
+                document.getElementById("sendresult").innerHTML = "web3.cmt.sendTransaction FAILED: " + e;
+                return;
+            }
+            document.getElementById("sendresult").innerHTML = tx;
+        });
+    }
+
+    function sendBtttx() {
+        web3.cmt.sendTransaction({
+            to: "0x011c6dd9565b8b83e6a9ee3f06e89ece3251ef2f",
+            value: 500000000000000000,
+            data: 0x454a2ab30000000000000000000000000000000000000000000000000000000000015619
+        }, function (e, tx) {
+            if (e) {
+                console.log(e);
+                document.getElementById("sendbttresult").innerHTML = "web3.cmt.sendTransaction FAILED: " + e;
+                return;
+            }
+            document.getElementById("sendbttresult").innerHTML = tx;
+        });
+    }
+
+    function sendtxwith(opts) {
+        web3.cmt.sendTransaction(opts, function (e, tx) {
+            if (e) {
+                document.getElementById("sendresult2").innerHTML = "web3.cmt.sendTransaction FAILED: " + e;
+                return;
+            }
+            document.getElementById("sendresult2").innerHTML = "pending";
+            var get_info = function () {
+                console.log('requesting data', tx);
+                web3.cmt.getTransaction(tx, function (err, txdata) {
+                    console.log(txdata);
+                    document.getElementById("sendresult2").innerHTML = txdata;
+                    /*if (err || txdata == null) {
+                        setTimeout(function () {
+                            get_info();
+                    } else if (txdata.input == opts.data) {
+                        document.getElementById("sendresult2").innerHTML = "SUCCESS";
+                    } else if (!txdata.input) {
+                        document.getElementById("sendresult2").innerHTML = "MISSING DATA";
+                    } else if (txdata.input != opts.data) {
+                        document.getElementById("sendresult2").innerHTML = "DATA IS WRONG : " + txdata.input;
+                    } else {
+                        document.getElementById("sendresult2").innerHTML = "ERROR:::<br><pre>" + txdata + "</pre>";
+                    }*/
+                });
+            };
+            get_info();
+        });
+    }
+
+    function sendtxwithdata() {
+        var data = "0x48656c6c6f20576f726c64";
+        sendtxwith({to: "0xfdd6db2c83928f73a50452eb0bb718a8e57e203b", value: 1000000000000000000, data: data});
+    }
+
+    function sendtxwithdata2() {
+        var data = "0x454a2ab30000000000000000000000000000000000000000000000000000000000015619";
+        var to = "0xfdd6db2c83928f73a50452eb0bb718a8e57e203b";
+        var value = 1000000000000000000;
+        var gas_price = "0x9502f9000";
+
+        sendtxwith({to: to, value: value, data: data, gasPrice: gas_price});
+    }
+
+    function signCmtTransaction() {
+        web3.cmt.signTransaction({
+            to: "0xfdd6db2c83928f73a50452eb0bb718a8e57e203b",
+            value: 1000000000000000000
+        }, function (e, raw) {
+            if (e) {
+                console.log(e);
+                document.getElementById("signresult").innerHTML = "SUCCESS (failed correctly)";
+                return;
+            }
+            document.getElementById("signresult").innerHTML = raw
+        });
+    }
+
+    function checkReceipt() {
+        web3.cmt.getTransactionReceipt(document.getElementById("txhash").value, function (e, data) {
+            if (e) {
+                document.getElementById("checkresult").innerHTML = e;
+            } else {
+                document.getElementById("checkresult").innerHTML = JSON.stringify(data);
+            }
+        });
+    }
+
+    function deploy_contract() {
+        var erc20abi = [
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_from",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferFrom",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "INITIAL_SUPPLY",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_subtractedValue",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "decreaseApproval",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "_owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [],
+                "name": "renounceOwnership",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_addedValue",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "increaseApproval",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    }
+                ],
+                "name": "allowance",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "previousOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipRenounced",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "previousOwner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferred",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Approval",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Transfer",
+                "type": "event"
+            }
+        ];
+
+        var erc20bin = "0x60806040526040805190810160405280600981526020017f434e4d20546f6b656e000000000000000000000000000000000000000000000081525060049080519060200190620000519291906200016f565b506040805190810160405280600381526020017f434e4d0000000000000000000000000000000000000000000000000000000000815250600590805190602001906200009f9291906200016f565b506012600660006101000a81548160ff021916908360ff1602179055506bc1ded63574de0e4660000000600755348015620000d957600080fd5b5033600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506007546001819055506007546000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506200021e565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10620001b257805160ff1916838001178555620001e3565b82800160010185558215620001e3579182015b82811115620001e2578251825591602001919060010190620001c5565b5b509050620001f29190620001f6565b5090565b6200021b91905b8082111562000217576000816000905550600101620001fd565b5090565b90565b611698806200022e6000396000f3006080604052600436106100db576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806306fdde03146100e0578063095ea7b31461017057806318160ddd146101d557806323b872dd146102005780632ff2e9dc14610285578063313ce567146102b057806366188463146102e157806370a0823114610346578063715018a61461039d5780638da5cb5b146103b457806395d89b411461040b578063a9059cbb1461049b578063d73dd62314610500578063dd62ed3e14610565578063f2fde38b146105dc575b600080fd5b3480156100ec57600080fd5b506100f561061f565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561013557808201518184015260208101905061011a565b50505050905090810190601f1680156101625780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561017c57600080fd5b506101bb600480360381019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001909291905050506106bd565b604051808215151515815260200191505060405180910390f35b3480156101e157600080fd5b506101ea6107af565b6040518082815260200191505060405180910390f35b34801561020c57600080fd5b5061026b600480360381019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001909291905050506107b9565b604051808215151515815260200191505060405180910390f35b34801561029157600080fd5b5061029a610b74565b6040518082815260200191505060405180910390f35b3480156102bc57600080fd5b506102c5610b7a565b604051808260ff1660ff16815260200191505060405180910390f35b3480156102ed57600080fd5b5061032c600480360381019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190505050610b8d565b604051808215151515815260200191505060405180910390f35b34801561035257600080fd5b50610387600480360381019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610e1f565b6040518082815260200191505060405180910390f35b3480156103a957600080fd5b506103b2610e67565b005b3480156103c057600080fd5b506103c9610f6c565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34801561041757600080fd5b50610420610f92565b6040518080602001828103825283818151815260200191508051906020019080838360005b83811015610460578082015181840152602081019050610445565b50505050905090810190601f16801561048d5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b3480156104a757600080fd5b506104e6600480360381019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190505050611030565b604051808215151515815260200191505060405180910390f35b34801561050c57600080fd5b5061054b600480360381019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190505050611250565b604051808215151515815260200191505060405180910390f35b34801561057157600080fd5b506105c6600480360381019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061144c565b6040518082815260200191505060405180910390f35b3480156105e857600080fd5b5061061d600480360381019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506114d3565b005b60048054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156106b55780601f1061068a576101008083540402835291602001916106b5565b820191906000526020600020905b81548152906001019060200180831161069857829003601f168201915b505050505081565b600081600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905092915050565b6000600154905090565b60008060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054821115151561080857600080fd5b600260008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054821115151561089357600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff16141515156108cf57600080fd5b610920826000808773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205461153b90919063ffffffff16565b6000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506109b3826000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205461155490919063ffffffff16565b6000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550610a8482600260008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205461153b90919063ffffffff16565b600260008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a3600190509392505050565b60075481565b600660009054906101000a900460ff1681565b600080600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205490508083101515610c9f576000600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550610d33565b610cb2838261153b90919063ffffffff16565b600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055505b8373ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008873ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020546040518082815260200191505060405180910390a3600191505092915050565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515610ec357600080fd5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167ff8df31144d9c2f0f6b59d69b8b98abd5459d07f2742c4df920b25aae33c6482060405160405180910390a26000600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60058054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156110285780601f10610ffd57610100808354040283529160200191611028565b820191906000526020600020905b81548152906001019060200180831161100b57829003601f168201915b505050505081565b60008060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054821115151561107f57600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff16141515156110bb57600080fd5b61110c826000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205461153b90919063ffffffff16565b6000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555061119f826000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205461155490919063ffffffff16565b6000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905092915050565b60006112e182600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205461155490919063ffffffff16565b600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020546040518082815260200191505060405180910390a36001905092915050565b6000600260008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561152f57600080fd5b61153881611570565b50565b600082821115151561154957fe5b818303905092915050565b6000818301905082811015151561156757fe5b80905092915050565b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16141515156115ac57600080fd5b8073ffffffffffffffffffffffffffffffffffffffff16600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a380600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505600a165627a7a72305820732126da95674cc65284d210fa60002a60394f2a220313f539429785f9d30d510029";
+        var contract = web3.cmt.contract(erc20abi);
+
+        contract.new(
+            '0x83B981c144dB90Ff46fE7FE0eFE38A68C0732FB7',
+            'Zhanglong Coin', 18, 'ZLC', {
+                gas: 1000000,
+                data: erc20bin
+            },
+            function (err, res) {
+                if (err) {
+                    document.getElementById("contractresult").innerHTML = "faile   ==   " + err;
+                } else if (res.address) {
+                    res.name(function (err, result) {
+                        if (result == 'token') {
+                            document.getElementById("contractresult").innerHTML = "OK";
+                        } else {
+                            document.getElementById("contractresult").innerHTML = "Error: token name    ==   " + result + "\" expected \"token\"";
+                        }
+                    });
+                } else {
+                }
+            });
+    }
+
+    function start() {
+        document.getElementById("get_cmt_account").addEventListener("click", get_cmt_account);
+        document.getElementById("get_balance").addEventListener("click", get_balance);
+        document.getElementById("personal_sign").addEventListener("click", personal_sign);
+        document.getElementById("getblock").addEventListener("click", get_first_block);
+        document.getElementById("personal_sign_with_binary_data").addEventListener("click", personal_sign_with_binary_data);
+        document.getElementById("eth_sign").addEventListener("click", eth_sign);
+        document.getElementById("bad_eth_sign").addEventListener("click", bad_eth_sign);
+        document.getElementById("sendtx").addEventListener("click", sendtx);
+        document.getElementById("sendbtttx").addEventListener("click", sendBtttx);
+        document.getElementById("signtx").addEventListener("click", signCmtTransaction);
+        document.getElementById("deploy_contract").addEventListener("click", deploy_contract);
+        document.getElementById("checkreceipt").addEventListener("click", checkReceipt);
+        document.getElementById("close").addEventListener("click", closeWindow);
+        document.getElementById("language").addEventListener("click", getLanguage);
+
+        var defaultAccountInterval = setInterval(function () {
+            if (web3.cmt.defaultAccount) {
+                clearInterval(defaultAccountInterval);
+                document.getElementById("address").innerHTML = web3.cmt.defaultAccount;
+                web3.cmt.getBalance(web3.cmt.defaultAccount, function (err, balance) {
+                    document.getElementById("balance").innerHTML = balance;
+                });
+            }
+        }, 1000);
+
+        setInterval(function () {
+            web3.currentProvider.sendAsync({
+                jsonrpc: '2.0', id: 1, method: 'net_version', params: []
+            }, function (err, x) {
+                if (err) {
+                    document.getElementById("jsonrpcNetworkId").innerHTML = "ERROR: " + err;
+                } else if (x.result != web3.version.network) {
+                    document.getElementById("jsonrpcNetworkId").innerHTML = "ERROR: web3.version.network = " + web3.version.network + ", net_version = " + x.result;
+                } else {
+                    document.getElementById("jsonrpcNetworkId").innerHTML = x.result;
+                }
+            });
+        }, 10000);
+
+        setInterval(function () {
+            web3.currentProvider.sendAsync({
+                jsonrpc: '2.0', id: 2, method: 'eth_blockNumber', params: []
+            }, function (err, x) {
+                if (x.error) {
+                    document.getElementById("blockNumber").innerHTML = x.error.message;
+                } else {
+                    document.getElementById("blockNumber").innerHTML = x.result;
+                }
+            });
+        }, 10000);
+    }
+
+    var startInterval = setInterval(function () {
+        if (window.web3) {
+            start();
+            clearInterval(startInterval);
+            document.getElementById("MISSINGWEB3").innerHTML = "";
+        } else {
+            document.getElementById("MISSINGWEB3").innerHTML = "MISSING WEB3";
+        }
+    }, 1000);
+
+    function closeWindow() {
+        window.CMTWallet.closeDapp();
+    }
+
+    function getLanguage() {
+        window.CMTWallet.getCurrentLanguage(function(data){
+            alert(data);
+        });
+    }
+</script>
+
+<body>
+<h2 id="MISSINGWEB3"></h2>
+<p>
+    You are <span id="address"></span><br/>
+    Balance <span id="balance"></span><br/>
+    network id: <span id="jsonrpcNetworkId"></span><br/>
+    block number: <span id="blockNumber"></span>
+</p>
+<p>
+    <button id="get_balance">get_balance</button>
+</p>
+<p>
+    <button id="personal_sign">personal_sign</button>
+    <button id="personal_sign_with_binary_data">personal_sign_with_binary_data</button>
+    <button id="eth_sign">eth_sign</button>
+    <button id="bad_eth_sign">BAD eth_sign</button>
+</p>
+<p>
+<div id="result"></div>
+</p>
+<p>
+    <button id="get_cmt_account">get_cmt_account</button>
+</p>
+<p>
+    <button id="sendtx">Send CMT</button>
+</p>
+<p>
+<div id="sendresult"></div>
+</p>
+<p>
+    <button id="sendbtttx">Send BTT</button>
+</p>
+<p>
+<div id="sendbttresult"></div>
+</p>
+<p>
+    <button id="signtx">Sign Transaction</button>
+</p>
+<p>
+<div id="signresult"></div>
+</p>
+<p>
+    <button id="getblock">Get CMT Block</button>
+</p>
+<p>
+<div id="cmtblockresult"></div>
+</p>
+<p>
+    <button id="deploy_contract">Deploy Contract</button>
+</p>
+<p>
+<div id="contractresult"></div>
+</p>
+
+<p>
+<div>
+    <input class="txhash_input" type="text" placeholder="Please enter TX Hash" id="txhash">
+</div>
+</p>
+<p>
+    <button id="checkreceipt">Check Tx Receipt</button>
+</p>
+<p>
+<div id="checkresult"></div>
+</p>
+</body>
+<p>
+    <button id="close">Close Window</button>
+</p>
+<p>
+    <button id="language">Get Language</button>
+</p>
+</html>
