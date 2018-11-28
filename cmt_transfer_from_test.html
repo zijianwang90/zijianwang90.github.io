@@ -915,12 +915,6 @@
             let batchTransferContractInstance = window.web3.cmt.contract(batchTransferAbi).at(batchTransferContract);
 
             let data = batchTransferContractInstance.batch.getData(crc20Contract, addressData, amountData);
-            let value = 0;
-
-            let tipDev = document.getElementById("tip_true").checked;
-            if (tipDev) {
-                value = web3.toWei(1, "ether");
-            }
 
             if (data) {
                 web3.cmt.getAccounts(function (e, accounts) {
