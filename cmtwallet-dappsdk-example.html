@@ -182,6 +182,7 @@
             data: "0x454a2ab30000000000000000000000000000000000000000000000000000000000015619"
         }, function (e, tx) {
             if (e) {
+                alert(e);
                 console.log(e);
                 document.getElementById("sendbttresult").innerHTML = "web3.cmt.sendTransaction FAILED: " + e;
                 return;
@@ -240,6 +241,7 @@
     function checkReceipt() {
         web3.cmt.getTransactionReceipt(document.getElementById("txhash").value, function (e, data) {
             if (e) {
+                alert(e);
                 document.getElementById("checkresult").innerHTML = e;
             } else {
                 document.getElementById("checkresult").innerHTML = JSON.stringify(data);
