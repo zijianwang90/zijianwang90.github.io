@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CMT Wallet Dapp SDK Example</title>
+    <style type="text/css">
+        body {
+            font-size: 4em;
+        }
+
+        button {
+            font-size: 1em;
+        }
+        input {
+            font-size: 0.6em;
+        }
+        @media    screen and (max-device-width:480px)  {
+          button {
+            width:  100%;
+          }
+          input {
+            width:  80%;
+          }
+        }
+    </style>
+
+
+<script type="text/javascript">
+    // if (window.cmtwallet == null) {
+    //     web3.cmt = web3.eth;
+    // }
+    function post(addr, data, sig, type) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200 || xmlhttp.status == 204) {
+                    document.getElementById("result").innerHTML = "SUCCESS";
+                } else {
+                    document.getElementById("result").innerHTML = "verification FAILED: " + xmlhttp.responseText;
+                }
+            }
+        };
+
+        xmlhttp.open("POST", "/", true);
+        xmlhttp.setRequestHeader('Content-Type', 'application/json');
+        xmlhttp.send(JSON.stringify({"address": addr, "data": data, "sig": sig, "type": type}));
+    }
+
+    function get_cmt_account() {
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                alert(e);
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+            } else {
+                document.getElementById("address").innerHTML = accounts[0];
+            }
+        });
+    }
+
+    function get_balance() {
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                alert(e);
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+            } else {
+                web3.cmt.getBalance(accounts[0], function (err, balance) {
+                    document.getElementById("balance").innerHTML = balance/10*18;
+                });
+            }
+        });
+    }
+
+    function get_first_block() {
+        web3.cmt.getBlock(100, true, function (e, patchData) {
+            if (e) {
+                alert(e);
+                document.getElementById("cmtblockresult").innerHTML = "web3.cmt.getCmtBlock FAILED: " + e;
+            } else {
+                document.getElementById("cmtblockresult").innerHTML = JSON.stringify(patchData);
+            }
+        });
+    }
+
+    function personal_sign() {
+        var data = "0x48656C6C6F20576F726C64";
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+                return;
+            }
+            console.log("Signing", data, "with account", accounts[0]);
+            web3.cmt.sign(data, accounts[0], function (e, sig) {
+                if (e) {
+                    alert(e);
+                    document.getElementById("result").innerHTML = "web3.personal.sign FAILED: " + e;
+                    return;
+                }
+                document.getElementById("result").innerHTML = sig;
+                console.log("Signature", sig);
+                // post(accounts[0], data, sig, "personal");
+            });
+        });
+    }
+
+    function personal_sign_with_binary_data() {
+        var data = web3.sha3("hello world");
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+                return;
+            }
+            web3.cmt.sign("hello world", accounts[0], function (e, sig) {
+                if (e) {
+                    alert(e);
+                    document.getElementById("result").innerHTML = "web3.personal.sign FAILED: " + e;
+                    return;
+                }
+                document.getElementById("result").innerHTML = sig;
+                // post(accounts[0], data, sig, "personal");
+            });
+        });
+    }
+
+
+    function cmt_sign() {
+        var data = "xyz";
+        console.log(web3.sha3(data));
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+                return;
+            }
+            web3.cmt.sign(web3.sha3(data), accounts[0], function (e, sig) {
+                if (e) {
+                    alert(e);
+                    document.getElementById("result").innerHTML = "web3.cmt.sign FAILED: " + e;
+                    return;
+                }
+                document.getElementById("result").innerHTML = sig;
+                // post(accounts[0], data, sig, "cmt");
+            });
+        });
+    }
+
+    function bad_cmt_sign() {
+        var data = "xyz";
+        console.log(web3.sha3(data));
+        web3.cmt.getAccounts(function (e, accounts) {
+            if (e) {
+                document.getElementById("result").innerHTML = "web3.cmt.getAccounts FAILED: " + e;
+                return;
+            }
+            web3.cmt.sign(accounts[0], data, function (e, sig) {
+                if (e) {
+                    document.getElementById("result").innerHTML = "SUCCESS (failed correctly)";
+                    return;
+                }
+                document.getElementById("result").innerHTML = "FAILED (didn't fail)";
+            });
+        });
+    }
+
+    function sendtx() {
+        web3.cmt.sendTransaction({
+            to: "0x011c6dd9565b8b83e6a9ee3f06e89ece3251ef2f",
+            value: 500000000000000000,
+            data: "0x454a2ab30000000000000000000000000000000000000000000000000000000000015619"
+        }, function (e, tx) {
+            if (e) {
+                alert(e);
+                console.log(e);
+                document.getElementById("sendresult").innerHTML = "web3.cmt.sendTransaction FAILED: " + e;
+                return;
+            }
+            document.getElementById("sendresult").innerHTML = tx;
+        });
+    }
+
+    function sendBtttx() {
+        web3.cmt.sendTransaction({
+            to: "0x011c6dd9565b8b83e6a9ee3f06e89ece3251ef2f",
+            value: 500000000000000000,
+            data: "0x454a2ab30000000000000000000000000000000000000000000000000000000000015619"
+        }, function (e, tx) {
+            if (e) {
+                console.log(e);
+                document.getElementById("sendbttresult").innerHTML = "web3.cmt.sendTransaction FAILED: " + e;
+                return;
+            }
+            document.getElementById("sendbttresult").innerHTML = tx;
+        });
+    }
+
+    function sendtxwith(opts) {
+        web3.cmt.sendTransaction(opts, function (e, tx) {
+            if (e) {
+                alert(e);
+                document.getElementById("sendresult2").innerHTML = "web3.cmt.sendTransaction FAILED: " + e;
+                return;
+            }
+            document.getElementById("sendresult2").innerHTML = "pending";
+            var get_info = function () {
+                console.log('requesting data', tx);
+                web3.cmt.getTransaction(tx, function (err, txdata) {
+                    console.log(txdata);
+                    document.getElementById("sendresult2").innerHTML = txdata;
+                });
+            };
+            get_info();
+        });
+    }
+
+    function sendtxwithdata() {
+        var data = "0x48656c6c6f20576f726c64";
+        sendtxwith({to: "0xfdd6db2c83928f73a50452eb0bb718a8e57e203b", value: 1000000000000000000, data: data});
+    }
+
+    function sendtxwithdata2() {
+        var data = "0x454a2ab30000000000000000000000000000000000000000000000000000000000015619";
+        var to = "0xfdd6db2c83928f73a50452eb0bb718a8e57e203b";
+        var value = 1000000000000000000;
+        var gas_price = "0x9502f9000";
+
+        sendtxwith({to: to, value: value, data: data, gasPrice: gas_price});
+    }
+
+    function signCmtTransaction() {
+        web3.cmt.signTransaction({
+            to: "0xfdd6db2c83928f73a50452eb0bb718a8e57e203b",
+            value: 1000000000000000000
+        }, function (e, raw) {
+            if (e) {
+                console.log(e);
+                document.getElementById("signresult").innerHTML = "SUCCESS (failed correctly)";
+                return;
+            }
+            document.getElementById("signresult").innerHTML = raw
+        });
+    }
+
+    function checkReceipt() {
+        web3.cmt.getTransactionReceipt(document.getElementById("txhash").value, function (e, data) {
+            if (e) {
+                document.getElementById("checkresult").innerHTML = e;
+            } else {
+                document.getElementById("checkresult").innerHTML = JSON.stringify(data);
+            }
+        });
+    }
+
+    function sendContractToken() {
+        const erc20abi = [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Transfer",
+                "type": "event"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_subtractedValue",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "decreaseApproval",
+                "outputs": [
+                    {
+                        "name": "success",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_addedValue",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "increaseApproval",
+                "outputs": [
+                    {
+                        "name": "success",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [],
+                "name": "pause",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [],
+                "name": "renounceOwnership",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_logo",
+                        "type": "string"
+                    }
+                ],
+                "name": "setLogo",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_webSite",
+                        "type": "string"
+                    }
+                ],
+                "name": "setWebsite",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_from",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferFrom",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [],
+                "name": "Unpause",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "previousOwner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferred",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [],
+                "name": "Pause",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "previousOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipRenounced",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Approval",
+                "type": "event"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [],
+                "name": "unpause",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "name": "_name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "_symbol",
+                        "type": "string"
+                    },
+                    {
+                        "name": "_decimals",
+                        "type": "uint8"
+                    },
+                    {
+                        "name": "_supply",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "_freezeNum",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "_releaseTime",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    }
+                ],
+                "name": "allowance",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "_owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "freezeNum",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "INITIAL_SUPPLY",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "logo",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "paused",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "releaseTime",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "website",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+        web3.cmt.getAccounts(function (e, accounts) {
+            // const contract = web3.cmt.contract(erc20abi, document.getElementById("contract").value, {from: accounts[0], gas: 100000});
+            var contract_addr = document.getElementById("contract").value;
+            if (contract_addr == "" ){
+                contract_addr = "0xb6b29ef90120bec597939e0eda6b8a9164f75deb";
+            }
+            const contract = web3.cmt.contract(erc20abi, contract_addr);
+            const instance = contract.at(contract_addr);
+            // alert(instance.balanceOf(accounts[0]).toString());
+            // alert(instance.transfer.getData('0xc8a48a191525E2C0c5741109ecF0CCc61907432c', 1));
+
+            var transfer_addr = document.getElementById("transfer").value;
+            if (transfer_addr == "") {
+                transfer_addr = "0xc3a41eced52ae62725bea27f319ea16a266907ad";
+            }
+
+            var transfer_value = document.getElementById("transfer_value").value;
+            if (transfer_value == "") {
+                transfer_value = "88";
+            }
+
+            instance.transfer(transfer_addr, transfer_value * 1000000000000000000).send();
+        });
+    }
+
+    function callContractSetData() {
+        const erc20abi = [
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "age",
+  "outputs": [
+   {
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "getData",
+  "outputs": [
+   {
+    "name": "",
+    "type": "string"
+   },
+   {
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "msg",
+  "outputs": [
+   {
+    "name": "",
+    "type": "string"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": false,
+  "inputs": [
+   {
+    "name": "_msg",
+    "type": "string"
+   },
+   {
+    "name": "_age",
+    "type": "uint256"
+   }
+  ],
+  "name": "setData",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+ }
+];
+        web3.cmt.getAccounts(function (e, accounts) {
+            // const contract = web3.cmt.contract(erc20abi, document.getElementById("contract").value, {from: accounts[0], gas: 100000});
+            var contract_addr = "0x794448cfbeb355e5b86aba0b62a00317e5ef297b";
+            const contract = web3.cmt.contract(erc20abi, contract_addr);
+            const instance = contract.at(contract_addr);
+            // alert(instance.balanceOf(accounts[0]).toString());
+            // alert(instance.transfer.getData('0xc8a48a191525E2C0c5741109ecF0CCc61907432c', 1));
+
+            // var transfer_addr = document.getElementById("transfer").value;
+            // if (transfer_addr == "") {
+            //     transfer_addr = "0xc3a41eced52ae62725bea27f319ea16a266907ad";
+            // }
+
+            // var transfer_value = document.getElementById("transfer_value").value;
+            // if (transfer_value == "") {
+            //     transfer_value = "88";
+            // }
+
+            instance.setData("woody", 30).send();
+        });
+    }
+    function callContractSetData() {
+        const erc20abi = [
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "age",
+  "outputs": [
+   {
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "getData",
+  "outputs": [
+   {
+    "name": "",
+    "type": "string"
+   },
+   {
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "msg",
+  "outputs": [
+   {
+    "name": "",
+    "type": "string"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": false,
+  "inputs": [
+   {
+    "name": "_msg",
+    "type": "string"
+   },
+   {
+    "name": "_age",
+    "type": "uint256"
+   }
+  ],
+  "name": "setData",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+ }
+];
+        web3.cmt.getAccounts(function (e, accounts) {
+            // const contract = web3.cmt.contract(erc20abi, document.getElementById("contract").value, {from: accounts[0], gas: 100000});
+            var contract_addr = "0x794448cfbeb355e5b86aba0b62a00317e5ef297b";
+            const contract = web3.cmt.contract(erc20abi, contract_addr);
+            const instance = contract.at(contract_addr);
+            // alert(instance.balanceOf(accounts[0]).toString());
+            // alert(instance.transfer.getData('0xc8a48a191525E2C0c5741109ecF0CCc61907432c', 1));
+
+            // var transfer_addr = document.getElementById("transfer").value;
+            // if (transfer_addr == "") {
+            //     transfer_addr = "0xc3a41eced52ae62725bea27f319ea16a266907ad";
+            // }
+
+            // var transfer_value = document.getElementById("transfer_value").value;
+            // if (transfer_value == "") {
+            //     transfer_value = "88";
+            // }
+
+            instance.setData("woody", 30).send();
+        });
+    }
+    function callContractGetData() {
+        const erc20abi = [
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "age",
+  "outputs": [
+   {
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "getData",
+  "outputs": [
+   {
+    "name": "",
+    "type": "string"
+   },
+   {
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": true,
+  "inputs": [],
+  "name": "msg",
+  "outputs": [
+   {
+    "name": "",
+    "type": "string"
+   }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "constant": false,
+  "inputs": [
+   {
+    "name": "_msg",
+    "type": "string"
+   },
+   {
+    "name": "_age",
+    "type": "uint256"
+   }
+  ],
+  "name": "setData",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+ }
+];
+        
+            var contract_addr = "0x794448cfbeb355e5b86aba0b62a00317e5ef297b";
+            const contract = web3.cmt.contract(erc20abi, contract_addr);
+            const instance = contract.at(contract_addr);
+         
+            instance.getData(function(error,result){
+                alert("getData"+result[0]+result[1]);
+            });
+    
+    }
+    function start() {
+        document.getElementById("get_cmt_account").addEventListener("click", get_cmt_account);
+        document.getElementById("get_balance").addEventListener("click", get_balance);
+        document.getElementById("personal_sign").addEventListener("click", personal_sign);
+        document.getElementById("getblock").addEventListener("click", get_first_block);
+        document.getElementById("personal_sign_with_binary_data").addEventListener("click", personal_sign_with_binary_data);
+        document.getElementById("cmt_sign").addEventListener("click", cmt_sign);
+        document.getElementById("bad_cmt_sign").addEventListener("click", bad_cmt_sign);
+        document.getElementById("sendtx").addEventListener("click", sendtx);
+        document.getElementById("sendbtttx").addEventListener("click", sendBtttx);
+        document.getElementById("signtx").addEventListener("click", signCmtTransaction);
+        document.getElementById("checkreceipt").addEventListener("click", checkReceipt);
+        document.getElementById("close").addEventListener("click", closeWindow);
+        document.getElementById("language").addEventListener("click", getLanguage);
+        document.getElementById("send_contract_token").addEventListener("click", sendContractToken);
+        document.getElementById("call_common_contract_setData").addEventListener("click", callContractSetData);
+        document.getElementById("call_common_contract_getData").addEventListener("click", callContractGetData);
+        
+
+        var defaultAccountInterval = setInterval(function () {
+            if (web3.cmt.defaultAccount) {
+                clearInterval(defaultAccountInterval);
+                document.getElementById("address").innerHTML = web3.cmt.defaultAccount;
+                web3.cmt.getBalance(web3.cmt.defaultAccount, function (err, balance) {
+                    document.getElementById("balance").innerHTML = balance/10*18;
+                });
+            }
+        }, 1000);
+
+        setInterval(function () {
+            web3.currentProvider.sendAsync({
+                jsonrpc: '2.0', id: 1, method: 'net_version', params: []
+            }, function (err, x) {
+                if (err) {
+                    document.getElementById("jsonrpcNetworkId").innerHTML = "ERROR: " + err;
+                } else if (x.result != web3.version.network) {
+                    document.getElementById("jsonrpcNetworkId").innerHTML = "ERROR: web3.version.network = " + web3.version.network + ", net_version = " + x.result;
+                } else {
+                    document.getElementById("jsonrpcNetworkId").innerHTML = x.result;
+                }
+            });
+        }, 10000);
+
+        setInterval(function () {
+            web3.currentProvider.sendAsync({
+                jsonrpc: '2.0', id: 2, method: 'eth_blockNumber', params: []
+            }, function (err, x) {
+                if (x.error) {
+                    document.getElementById("blockNumber").innerHTML = x.error.message;
+                } else {
+                    document.getElementById("blockNumber").innerHTML = x.result;
+                }
+            });
+        }, 10000);
+    }
+
+    var startInterval = setInterval(function () {
+        if (window.web3) {
+            start();
+            clearInterval(startInterval);
+            document.getElementById("MISSINGWEB3").innerHTML = "";
+        } else {
+            document.getElementById("MISSINGWEB3").innerHTML = "MISSING WEB3";
+        }
+    }, 1000);
+
+    function closeWindow() {
+        window.cmtwallet.closeDapp();
+    }
+
+    function getLanguage() {
+        window.cmtwallet.getCurrentLanguage(function(err, data){
+            alert(data);
+        });
+    }
+</script>
+</head>
+<body>
+    <h2 id="MISSINGWEB3"></h2>
+    <p>
+        <span>Dapp API Examples</span><br>
+        <img src="images/DappSDKExample.png" alt=""/><br>
+        <span style="font-size: 0.3em;">Use CMT Wallet 2.0 DApp browser scan this QR Code to view exmaples.</span>
+    </p>
+    <p>
+        You are <span id="address"></span><br/>
+        Balance <span id="balance"></span><br/>
+        network id: <span id="jsonrpcNetworkId"></span><br/>
+        block number: <span id="blockNumber"></span>
+    </p>
+    <p>
+        <button id="get_balance">get_balance</button>
+    </p>
+    <p>
+        <button id="personal_sign">personal_sign</button>
+        <button id="personal_sign_with_binary_data">personal_sign_with_binary_data</button>
+        <button id="cmt_sign">cmt_sign</button>
+        <button id="bad_cmt_sign">BAD cmt_sign</button>
+    </p>
+    <p>
+        <div id="result"></div>
+    </p>
+    <p>
+        <button id="get_cmt_account">get_cmt_account</button>
+    </p>
+    <p>
+        <button id="sendtx">Send CMT</button>
+    </p>
+    <p>
+        <div id="sendresult"></div>
+    </p>
+    <p>
+        <button id="sendbtttx">Send BTT</button>
+    </p>
+    <p>
+        <div id="sendbttresult"></div>
+    </p>
+    <p>
+        <button id="signtx">Sign Transaction</button>
+    </p>
+    <p>
+        <div id="signresult"></div>
+    </p>
+    <p>
+        <button id="getblock">Get CMT Block</button>
+    </p>
+    <p>
+        <div id="cmtblockresult"></div>
+    </p>
+    <p>
+        <div id="contractresult"></div>
+    </p>
+
+    <p>
+        <div>
+            <input class="txhash_input" type="text" placeholder="Please enter TX Hash" id="txhash">
+        </div>
+    </p>
+    <p>
+        <button id="checkreceipt">Check Tx Receipt</button>
+    </p>
+    <p>
+        <div id="checkresult"></div>
+    </p>
+    <p>
+        <button id="close">Close Window</button>
+    </p>
+    <p>
+        <button id="language">Get Language</button>
+    </p>
+    <p>
+        <div>
+            <input class="contract_input" type="text" placeholder="Please enter Contract Address" id="contract">
+        </div>
+        <div>
+            <input class="transfer_input" type="text" placeholder="Please enter Transfer Address" id="transfer">
+        </div>
+        <div>
+            <input class="transfer_value_input" type="text" placeholder="Please enter Transfer Value" id="transfer_value">
+        </div>
+    </p>
+    <p>
+        <button id="send_contract_token">Send CRC20 Token</button>
+    </p>
+    <p>
+        <button id="call_common_contract_setData">Call Contract setData</button>
+    </p>
+    <p>
+        <button id="call_common_contract_getData">Call Contract getData</button>
+    </p>
+</body>
+</html>
