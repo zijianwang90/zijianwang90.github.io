@@ -1,0 +1,106 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name='viewport' content='initial-scale=1, viewport-fit=cover'>
+    <title data-localize="cmt-metaTitle">Issue Token</title>
+    <link rel="stylesheet" href="styles/normalize.css">
+    <link rel="stylesheet" href="styles/weui.min.css">
+    <link rel="stylesheet" href="styles/iutoast.css">
+    <link rel="stylesheet" href="styles/token-issue.css" />
+</head>
+
+<body>
+
+<div class="page">
+    <div class="page__bd">
+        <div class="weui-cells__title" data-localize="cmt-token-name">Token Name <em>*</em></div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" maxlength="20" data-localize="cmt-input-token-name"
+                           placeholder="Please enter the token name" id="tokenname">
+                </div>
+            </div>
+        </div>
+        <div class="weui-cells__title" data-localize="cmt-token-abbr">Token Abbreviation <em>*</em></div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" maxlength="5" data-localize="cmt-input-token-abbr"
+                           placeholder="less than 5 characters" id="tokenabbr">
+                </div>
+            </div>
+        </div>
+        <div class="weui-cells__title" style="display: none;">Token Decemals <em>*</em></div>
+        <div class="weui-cells" style="display: none;">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" placeholder="less than 5 characters" id="decemals">
+                </div>
+            </div>
+        </div>
+        <div class="weui-cells__title" data-localize="cmt-total-Supply">Total Supply <em>*</em></div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="number" maxlength="13" oninput="if(value.length>13)value=value.slice(0,13)"  data-localize="cmt-input-total-Supply"
+                           placeholder="Please enter the Total Supply" id="total">
+                </div>
+            </div>
+        </div>
+        <div class="weui-cells__title" style="display: none;" data-localize="cmt-frozen-amount">Frozen Amount</div>
+        <div class="weui-cells" style="display: none;">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="number" data-localize="cmt-input-frozen-amount" placeholder="Please enter the Frozen Amount"
+                           id="frozen" value="0">
+                </div>
+            </div>
+        </div>
+        <div class="weui-cells__title" style="display: none;" data-localize="cmt-frozen-days">Frozen Days </div>
+        <div class="weui-cells" style="display: none;">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="number" data-localize="cmt-input-frozen-days" placeholder="Please enter the Frozen Days"
+                           id="release" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-ft">
+        <div class="cost-token" data-localize="cmt-cost">
+            Your wallet balance need to be greater than 1000 CMT
+        </div>
+        <div class="disable-button submit" data-localize="cmt-submit">
+            Submit
+        </div>
+    </div>
+</div>
+
+<div id="iutoast" class="iu-loading" style="display: none;">
+    <div class="iu-loading-mask "></div>
+    <div class="flag note note--secondary">
+        <div class="flag__image note__icon">
+            <div id="iusuccess" data-code="icon" style="display: none;"><i class="checkmark draw" > </i></div>
+            <i id='iuerror' data-code="icon" class="checkfork" style="display: none;"></i>
+            <div id="iuloading" data-code="icon" class="lds-ring" ><div></div><div></div><div></div>           <div></div></div>
+        </div>
+        <div id="iutitle" class="flag__body note__text">
+        </div>
+        <a href="#" class="note__close">
+            <i class="fa fa-times"></i>
+        </a>
+    </div>
+</div>
+
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/fastclick.js"></script>
+<script src="scripts/weui.min.js"></script>
+<script src="scripts/localize.js"></script>
+<script src="scripts/token-issue.js"></script>
+</body>
+
+</html>

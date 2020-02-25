@@ -26,7 +26,7 @@
 }
 
 .swiper-first-page {
-    background: url('/static/images/swiper-two.jpg');
+    background: url('../images/success-launch.jpg');
     background-size: 100% 100%;
 }
 

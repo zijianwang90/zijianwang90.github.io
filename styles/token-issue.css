@@ -1,0 +1,60 @@
+/**
+ * Created by miniQ on 18/12/1.
+ */
+
+.page__bd {
+    margin: 0 16px;
+}
+
+em {
+    color: rgb(208, 2, 27);
+}
+
+.weui-cell {
+    padding: 0;
+}
+
+.weui-cells__title {
+    margin-top: 0;
+    padding: 15px 0 0 0;
+    font-size: 12px;
+    color: rgb(62, 74, 89);
+}
+
+input::placeholder {
+    color: rgb(190, 194, 196);
+}
+
+.weui-input {
+    padding: 10px 15px;
+    height: 36px;
+    font-size: 14px;
+    color: #333;
+    border-radius: 3px;
+    background-color: rgb(240, 240, 240) !important;
+}
+
+.page-ft {
+    margin-top: 22px;
+}
+
+.cost-token {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.54);
+}
+
+.submit {
+    height: 36px;
+    margin: 0 40px;
+    border-radius: 3px;
+    text-align: center;
+    color: #fff;
+    line-height: 36px;
+    font-size: 14px;
+    background-color:rgb(0, 188, 212);
+}
+.disable-button {
+    background-color:rgba(79, 79, 79, 0.26);
+}
